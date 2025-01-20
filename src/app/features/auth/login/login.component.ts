@@ -3,7 +3,7 @@ import {FormsModule} from "@angular/forms";
 import {AuthService} from "../../../core/services/auth.service";
 import {AlertComponent} from "../../../shared/components/alert/alert.component";
 import {NgIf} from "@angular/common";
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {LoginDTO} from "../../../core/dtos/login.dto";
 
 @Component({
@@ -16,7 +16,7 @@ import {LoginDTO} from "../../../core/dtos/login.dto";
 })
 export class LoginComponent {
 
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService, private readonly router: Router) { }
 
   login: LoginDTO = {
     email: '',
@@ -27,7 +27,10 @@ export class LoginComponent {
 
   onSubmit() {
     this.authService.login(this.login).subscribe({
-      next: (auth) => console.log(auth.token),
+      next: (auth) => {
+        this.authService.storeToken(auth.token);
+        this.router.navigate(['home']);
+      },
       error: err => {
         const { description } = err.error;
         this.errorMessage = description;
