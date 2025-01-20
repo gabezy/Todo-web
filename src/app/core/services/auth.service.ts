@@ -10,6 +10,7 @@ import {LoginDTO, TokenDTO} from "../dtos/login.dto";
 export class AuthService {
 
   private readonly baseUrl: string;
+  private readonly AUTH_TOKEN = 'AUTH_TOKEN'
 
   constructor(private readonly http: HttpClient) {
     this.baseUrl = environment.todoApiUrl + '/auth'
@@ -18,4 +19,21 @@ export class AuthService {
   login(data: LoginDTO): Observable<TokenDTO> {
     return this.http.post<TokenDTO>(this.baseUrl, data);
   }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken()
+  }
+
+  storeToken(token: string): void {
+    localStorage.setItem(this.AUTH_TOKEN, token);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.AUTH_TOKEN);
+  }
+
+  clearToken(): void {
+    localStorage.removeItem(this.AUTH_TOKEN);
+  }
+
 }
