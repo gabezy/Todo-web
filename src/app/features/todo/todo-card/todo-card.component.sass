@@ -1,0 +1,26 @@
+.completed-button
+  width: 20px
+  height: 20px
+  border-radius: 50%
+  border: 1px solid #4EA8DE
+  background: transparent
+  color: #F2F2F2
+  &.uncompleted:hover
+    background: #1E6F9F
+    opacity: 0.5
+  &.completed:hover
+    background: #5E60CE
+    border-color: #5E60CE
+    &:hover
+      background: #8284FA
+
+.task-content
+  &.completed
+    text-decoration: line-through
+    color: #808080
+
+.trash-button
+  color: white
+  &:hover
+    color: red
+
