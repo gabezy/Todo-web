@@ -33,7 +33,7 @@ export const authInterceptor =
     const token = authService.getToken();
 
     const modifiedRequest = token
-      ? req.clone({setHeaders: {'Authorizaton' : `Bearer ${token}`}})
+      ? req.clone({setHeaders: {'Authorization' : `Bearer ${token}`}})
       : req;
 
     return next(modifiedRequest);
