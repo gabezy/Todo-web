@@ -1,0 +1,32 @@
+<main class="container d-flex flex-column align-items-center justify-content-center">
+  <form class="row w-100 g-2 position-relative" #taskForm="ngForm" (ngSubmit)="createNewTask()">
+    <div class="col-10">
+      <input [(ngModel)]="newTask.content" class="form-control rounded-2 text-light"
+              required type="text" name="task" id="task" placeholder="Add a new task"  >
+    </div>
+    <div class="col-2">
+      <button class="btn btn-primary w-100 h-100 d-flex align-items-center justify-content-center gap-1"
+      >
+        Add
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+        </svg>
+      </button>
+    </div>
+  </form>
+
+  <div class="text-info fw-bold d-flex align-items-center justify-content-between w-100 mt-4">
+    <p>Tasks created<span class="ms-1 counter">0</span></p>
+    <p>Completed tasks<span class="ms-1 counter">0</span></p>
+  </div>
+
+  <div *ngFor="let task of tasks" class="w-100 mt-4">
+    <app-todo-card [task]="task" (completedStatusChanged)="onTaskCompletedStatusChange()"
+                   (deletedEvent)="onDeleteEvent()"
+    ></app-todo-card>
+  </div>
+
+  <app-empty-state *ngIf="tasks.length == 0" resource="task" />
+  <app-alert *ngIf="errorMessage" [message]="errorMessage" type="alert-danger" [duration]="2000"/>
+</main>
