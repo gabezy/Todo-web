@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {LoginDTO, TokenDTO} from "../dtos/login.dto";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AuthService {
   private readonly baseUrl: string;
   private readonly AUTH_TOKEN = 'AUTH_TOKEN'
 
-  constructor(private readonly http: HttpClient) {
+  constructor(private readonly http: HttpClient, private readonly router: Router) {
     this.baseUrl = environment.todoApiUrl + '/auth'
   }
 
@@ -34,6 +35,11 @@ export class AuthService {
 
   clearToken(): void {
     localStorage.removeItem(this.AUTH_TOKEN);
+  }
+
+  logout(): void {
+    this.clearToken();
+    this.router.navigate(['login']);
   }
 
 }
