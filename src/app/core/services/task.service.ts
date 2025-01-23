@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
-import {CreateTaskDTO, TaskCompletedDTO, TaskDTO} from "../dtos/task.dto";
+import {CreateTaskDTO, TaskCompletedDTO, TaskDTO, TaskFilterDTO} from "../dtos/task.dto";
 import {Observable} from "rxjs";
+import {toHttpParams} from "../utils/params.utils";
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,10 @@ export class TaskService {
 
   getAllTask(): Observable<TaskDTO[]> {
     return this.http.get<TaskDTO[]>(this.baseUrl)
+  }
+
+  getByFilter(filter: TaskFilterDTO): Observable<TaskDTO[]> {
+    return this.http.get<TaskDTO[]>(`${this.baseUrl}/filter`, { params: toHttpParams(filter) });
   }
 
   changeCompletedStatus(id: number, completedStatus: TaskCompletedDTO): Observable<void> {
