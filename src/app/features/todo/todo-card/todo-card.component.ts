@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {TaskCompletedDTO, TaskDTO} from "../../../core/dtos/task.dto";
 import {NgClass, NgIf} from "@angular/common";
 import {TaskService} from "../../../core/services/task.service";
@@ -23,7 +23,7 @@ export class TodoCardComponent {
   @Output()
   deletedEvent: EventEmitter<void> = new EventEmitter<void>();
 
-  private readonly taskService = inject(TaskService)
+  constructor(private readonly taskService: TaskService) { }
 
   toggleCompleted() {
     const completedDTO: TaskCompletedDTO = {
