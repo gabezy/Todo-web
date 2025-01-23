@@ -1,3 +1,20 @@
+.task-card
+  background: #262626
+  .delete-button
+    opacity: 0
+    background: transparent
+    color: #808080
+    padding: 4px
+    border-radius: 8px
+    &:hover
+      background: #808080
+      color: #E25858
+  &:hover .delete-button
+    opacity: initial
+  @media (max-width: 500px)
+    .delete-button
+      opacity: initial
+
 .completed-button
   width: 20px
   height: 20px
@@ -19,8 +36,4 @@
     text-decoration: line-through
     color: #808080
 
-.trash-button
-  color: white
-  &:hover
-    color: red
 
