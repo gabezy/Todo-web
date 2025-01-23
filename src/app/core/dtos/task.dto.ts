@@ -12,3 +12,8 @@ export interface CreateTaskDTO {
 export interface TaskCompletedDTO {
   completed: boolean
 }
+
+export interface TaskFilterDTO {
+  content?: string,
+  completed?: boolean
+}
