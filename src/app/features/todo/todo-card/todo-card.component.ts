@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {TaskCompletedDTO, TaskDTO} from "../../../core/dtos/task.dto";
 import {NgClass, NgIf} from "@angular/common";
 import {TaskService} from "../../../core/services/task.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-todo-card',
@@ -16,14 +17,14 @@ export class TodoCardComponent {
 
   @Input()
   task!: TaskDTO;
-
   @Output()
-  completedStatusChanged = new EventEmitter<void>();
-
+  completedStatusChanged = new EventEmitter();
   @Output()
-  deletedEvent: EventEmitter<void> = new EventEmitter<void>();
+  deletedEvent: EventEmitter<void> = new EventEmitter();
+  @Output()
+  editModal: EventEmitter<number> = new EventEmitter();
 
-  constructor(private readonly taskService: TaskService) { }
+  constructor(private readonly taskService: TaskService, private readonly router: Router) { }
 
   toggleCompleted() {
     const completedDTO: TaskCompletedDTO = {
@@ -41,6 +42,10 @@ export class TodoCardComponent {
       complete: () => this.deletedEvent.emit(),
       error: err => console.log({ err })
     });
+  }
+
+  onEditModal(id: number) {
+    this.editModal.emit(id);
   }
 
 }

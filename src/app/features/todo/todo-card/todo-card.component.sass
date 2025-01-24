@@ -1,6 +1,6 @@
 .task-card
   background: #262626
-  .delete-button
+  .action-button
     opacity: 0
     background: transparent
     color: #808080
@@ -8,11 +8,13 @@
     border-radius: 8px
     &:hover
       background: #808080
+      color: #D9D9D9
+    &.delete-button:hover
       color: #E25858
-  &:hover .delete-button
+  &:hover button
     opacity: initial
   @media (max-width: 500px)
-    .delete-button
+    button
       opacity: initial
 
 .completed-button
