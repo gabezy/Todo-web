@@ -10,8 +10,8 @@ export const routes: Routes = [
   { path: 'registry', component: RegistryComponent },
   { path: '', component: MainLayoutComponent, canActivate: [authGuard],
     children: [
-      {path: '', redirectTo: '/home', pathMatch: "full"},
-      {path: 'home', component: TodoComponent}
+      {path: '', redirectTo: '/tasks', pathMatch: "full"},
+      {path: 'tasks', component: TodoComponent}
     ]
   },
   { path: '**', redirectTo: '/login', pathMatch: "full" }
