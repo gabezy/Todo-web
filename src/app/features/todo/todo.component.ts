@@ -1,11 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, TemplateRef} from '@angular/core';
 import {FormsModule, NgForm} from "@angular/forms";
 import {TaskService} from "../../core/services/task.service";
-import {CreateTaskDTO, TaskDTO, TaskFilterDTO} from "../../core/dtos/task.dto";
+import {CreateTaskDTO, TaskDTO, TaskFilterDTO, UpdateTaskDTO} from "../../core/dtos/task.dto";
 import {EmptyStateComponent} from "../../shared/components/empty-state/empty-state.component";
 import {NgForOf, NgIf} from "@angular/common";
 import {AlertComponent} from "../../shared/components/alert/alert.component";
 import {TodoCardComponent} from "./todo-card/todo-card.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-todo',
@@ -20,76 +21,110 @@ import {TodoCardComponent} from "./todo-card/todo-card.component";
 export class TodoComponent implements OnInit {
 
   tasksCreatedCounter!: number;
-
   tasksCompletedCounter!: number;
-
   newTask: CreateTaskDTO = {
     content: '',
     completed: false
   };
-
   errorMessage = '';
-
   tasks: TaskDTO[] = [];
-
   invalidContent = false;
+  selectedTask!: TaskDTO;
 
-  constructor(private readonly taskService: TaskService) { }
+  constructor(private readonly taskService: TaskService, private readonly modalService: NgbModal) { }
 
   ngOnInit(): void {
-    this.getAllTask();
+    this.loadTasks();
+  }
+
+  openModel(content: TemplateRef<any>, taskId: number) {
+    this.fetchTaskAndOpenModal(taskId, content);
   }
 
   createNewTask(form: NgForm): void {
-    console.log(form);
-
-    if (!this.newTask.content.length) {
+    if (this.isFormInvalid(form, this.newTask.content)) {
       this.invalidContent = true;
       return;
     }
 
     this.invalidContent = false;
-
     this.taskService.createTask(this.newTask).subscribe({
       complete: () => {
-        this.newTask.content = '';
-        this.getAllTask();
+        this.resetForm(form);
+        this.loadTasks();
       },
-      error: err => {
-        console.log({ err })
-        this.errorMessage = err.error.description
-      }
+      error: (err) => this.handlerError(err)
     });
   }
 
   onTaskCompletedStatusChange(): void {
-    this.getAllTask();
+    this.loadTasks();
   }
 
   onDeleteEvent(): void {
-    this.getAllTask();
+    this.loadTasks();
   }
 
-  private getAllTask(): void {
+  private loadTasks(): void {
     this.taskService.getAllTask().subscribe({
       next: value => {
         this.tasks = value
         this.tasksCreatedCounter = value.length;
-      }
+        this.setCompletedTaskCounter();
+      },
+      error: (err) => this.handlerError(err)
     });
 
-    this.setCompletedTaskCounter();
   }
 
   private setCompletedTaskCounter(): void {
-    const taskFilter: TaskFilterDTO = {
-      completed: true
-    }
+    const taskFilter: TaskFilterDTO = { completed: true };
 
     this.taskService.getByFilter(taskFilter).subscribe({
-      next: value => this.tasksCompletedCounter = value.length,
-      error: err => this.errorMessage = err.error.description
+      next: (completedTasks) => this.tasksCompletedCounter = completedTasks.length,
+      error: (err) => this.handlerError(err)
     })
+  }
+
+  private fetchTaskAndOpenModal(taskId: number, content: TemplateRef<any>): void {
+    this.taskService.getById(taskId).subscribe({
+      next: (task) => {
+        this.selectedTask = task;
+        this.openEditModal(taskId, content);
+      }
+    })
+  }
+
+  private openEditModal(taskId: number, content: TemplateRef<any>): void {
+    this.modalService.open(content, { ariaDescribedBy: 'modal-edit-title' }).result.then(
+      () => this.updateTask(taskId, this.selectedTask)
+    )
+  }
+
+  private updateTask(taskId: number, task: TaskDTO): void {
+    const updateTaskDTO: UpdateTaskDTO = {
+      content: task.content,
+      completed: task.completed
+    };
+
+    this.taskService.updateTask(taskId, updateTaskDTO).subscribe({
+      complete: () => this.loadTasks(),
+      error: (err) => this.handlerError(err)
+    })
+  }
+
+  private handlerError(error: any) {
+    console.error('error: ', error);
+    this.errorMessage = error.error?.description || 'An unexpected error occurred';
+  }
+
+  private resetForm(form: NgForm): void {
+    this.newTask.content = '';
+    form.resetForm();
+  }
+
+  private isFormInvalid(form: NgForm, taskContent: string): boolean {
+    return form.invalid || !taskContent.trim();
   }
 
 }
