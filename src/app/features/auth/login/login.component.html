@@ -1,43 +1,47 @@
-<main class="container d-flex flex-column align-items-center justify-content-center vh-100">
-  <h1>Welcome</h1>
-  <img src="./assets/logo.svg" alt="Logo" >
-  <form class="mt-4 w-100 needs-validation" #form="ngForm" (ngSubmit)="onSubmit()">
-    <div class="form-floating mb-3">
-      <input id="email" class="form-control" type="email" [(ngModel)]="login.email" #email="ngModel"
-             name="email" required placeholder="name@example.com"/>
-      <label for="email" >E-mail <span class="text-danger">*</span></label>
-      <div *ngIf="email.hasError('required') && email.touched" class="text-danger mt-2">
-        <span>E-mail is required</span>
+<main class="container h-100">
+  <div class="col-12 row align-items-center justify-content-center h-100">
+    <div class="row col-12 col-sm-7 col-lg-5 col-xl-4">
+      <h1 class="col-12 text-center">Welcome</h1>
+      <div class="col-12 text-center">
+        <img src="./assets/logo.svg" alt="Logo" >
       </div>
+      <form class="col-12 mt-4 needs-validation" #form="ngForm" (ngSubmit)="onSubmit()">
+        <div class="form-floating mb-3">
+          <input id="email" class="form-control" type="email" [(ngModel)]="login.email" #email="ngModel"
+                 name="email" required placeholder="name@example.com"/>
+          <label for="email" >E-mail <span class="text-danger">*</span></label>
+          <div *ngIf="email.hasError('required') && email.touched" class="text-danger mt-2">
+            <span>E-mail is required</span>
+          </div>
+        </div>
+        <div class="form-floating mb-3">
+          <input id="password" class="form-control" type="password" [(ngModel)]="login.password" #password="ngModel"
+                 name="password" required minlength="8" placeholder="password"/>
+          <label for="password">Password <span class="text-danger">*</span> </label>
+          <div *ngIf="password.touched" class="text-danger mt-2">
+            <span *ngIf="password.hasError('required')">Password is required</span>
+            <span *ngIf="password.hasError('minlength')">Minimum 8 characters</span>
+          </div>
+        </div>
+        <button type="submit" class="w-100 btn btn-primary pt-2" [disabled]="form.invalid">
+          Login
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"/>
+            <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+          </svg>
+        </button>
+      </form>
+      <ul class="col-12 mt-3 text-center">
+        <li>
+          <a routerLink="/registry" class="icon-link icon-link-hover">
+            Registry new account
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+            </svg>
+          </a>
+        </li>
+      </ul>
     </div>
-    <div class="form-floating mb-3">
-      <input id="password" class="form-control" type="password" [(ngModel)]="login.password" #password="ngModel"
-             name="password" required minlength="8" placeholder="password"/>
-      <label for="password">Password <span class="text-danger">*</span> </label>
-      <div *ngIf="password.touched" class="text-danger mt-2">
-        <span *ngIf="password.hasError('required')">Password is required</span>
-        <span *ngIf="password.hasError('minlength')">Minimum 8 characters</span>
-      </div>
-    </div>
-    <button type="submit" class="btn btn-primary w-100 pt-2 d-flex align-items-center justify-content-center gap-1"
-            [disabled]="form.invalid"
-      >
-      Login
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"/>
-        <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
-      </svg>
-    </button>
-  </form>
-  <ul class="mt-3">
-    <li>
-      <a routerLink="/registry" class="icon-link icon-link-hover">
-        Registry new account
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
-        </svg>
-      </a>
-    </li>
-  </ul>
+  </div>
 </main>
 <app-alert [message]="errorMessage" type="alert-danger" />

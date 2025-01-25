@@ -3,12 +3,12 @@ import {FormsModule} from "@angular/forms";
 import {CreateUserDTO} from "../../../core/dtos/user.dto";
 import {UserService} from "../../../core/services/user.service";
 import {NgIf} from "@angular/common";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-registry',
   standalone: true,
-  imports: [ FormsModule,  NgIf ],
+  imports: [ FormsModule,  NgIf, RouterLink ],
   providers: [ UserService ],
   templateUrl: './registry.component.html',
   styleUrl: './registry.component.sass'
