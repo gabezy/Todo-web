@@ -1,0 +1,64 @@
+<div id="wrapper">
+  <div class="container">
+    <form class="col-12 row g-2 position-relative" #taskForm="ngForm" (ngSubmit)="createNewTask(taskForm)">
+      <div class="col-9 col-md-10">
+        <input [(ngModel)]="newTask.content" class="form-control task-input"
+               required type="text" name="task" id="task" placeholder="Add a new task"  />
+      </div>
+      <div class="col-3 col-md-2">
+        <button class="btn btn-primary w-100 h-100 d-flex align-items-center justify-content-center gap-1"
+        >
+          Add
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+          </svg>
+        </button>
+      </div>
+      <span *ngIf="invalidContent" class="text-danger" >*field required</span>
+    </form>
+
+    <div class="col-12 d-flex justify-content-between text-info fw-bold mt-4">
+      <p>Tasks created<span class="ms-1 counter">{{ tasksCreatedCounter }}</span></p>
+      <p>Tasks completed<span class="ms-1 counter">{{ tasksCompletedCounter }}</span></p>
+    </div>
+
+    <main class="col-12 pb-2">
+      <div *ngFor="let task of tasks">
+        <app-todo-card
+          [task]="task"
+          (completedStatusChanged)="onTaskCompletedStatusChange()"
+          (deletedEvent)="onDeleteEvent()"
+          (editModal)="openModel(content, $event)"
+        ></app-todo-card>
+      </div>
+    </main>
+
+    <ng-template #content let-modal>
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-edit-title">Edit task</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+      </div>
+      <div class="modal-body edit-modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="taskContent" class="form-label">Task Content</label>
+            <input [(ngModel)]="selectedTask.content" class="form-control" id="taskContent" name="taskContent" required>
+          </div>
+          <div class="mb-3 form-check d-flex align-items-center gap-1">
+            <input class="form-check-input" type="checkbox" value="" [checked]="selectedTask.completed"
+                   [(ngModel)]="selectedTask.completed" id="taskCompleted" name="taskCompleted">
+            <label class="form-check-label" for="taskCompleted">Completed</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="modal.close('Save click')">Save</button>
+      </div>
+    </ng-template>
+
+    <app-empty-state *ngIf="tasks.length == 0" resource="task" />
+  </div>
+</div>
+
+<app-alert *ngIf="errorMessage" [message]="errorMessage" type="alert-danger" [duration]="2000"/>

@@ -29,7 +29,7 @@ export class LoginComponent {
     this.authService.login(this.login).subscribe({
       next: (auth) => {
         this.authService.storeToken(auth.token);
-        this.router.navigate(['home']);
+        this.router.navigate(['']);
       },
       error: err => {
         const { description } = err.error;
