@@ -1,24 +1,19 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
 import {AuthService} from "../../../core/services/auth.service";
-
-// @ts-ignore
-import Tooltip from 'bootstrap/js/dist/tooltip';
+import {NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [],
+  imports: [
+    NgbTooltip
+  ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.sass'
 })
-export class HeaderComponent implements OnInit{
+export class HeaderComponent {
 
   constructor(private readonly authService: AuthService, private readonly elRef: ElementRef) { }
-
-  ngOnInit() {
-    const tooltips = Array.from(this.elRef.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltips.forEach(tooltips => new Tooltip(tooltips))
-  }
 
   logout(): void {
     this.authService.logout();
