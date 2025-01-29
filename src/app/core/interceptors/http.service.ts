@@ -1,7 +1,8 @@
-import {HttpEvent, HttpHandlerFn, HttpRequest} from "@angular/common/http";
-import {Observable} from "rxjs";
+import {HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest} from "@angular/common/http";
+import {catchError, Observable, throwError} from "rxjs";
 import {inject} from "@angular/core";
 import {AuthService} from "../services/auth.service";
+import {Router} from "@angular/router";
 
 export const contentTypeInterceptor =
   (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> =>  {
@@ -21,8 +22,8 @@ export const contentTypeInterceptor =
 export const authInterceptor =
   (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
     const PUBLIC_URL = ['/auth', '/users'];
-
     const authService = inject(AuthService);
+    const router = inject(Router);
 
     const isUrlPublic = req.method == 'POST' && PUBLIC_URL.some(url => req.url.includes(url));
 
@@ -36,8 +37,13 @@ export const authInterceptor =
       ? req.clone({setHeaders: {'Authorization' : `Bearer ${token}`}})
       : req;
 
-    return next(modifiedRequest);
+    return next(modifiedRequest).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          authService.logout();
+          router.navigate(['/login']);
+        }
+        return throwError(() => error);
+      })
+    );
 }
-
-
-
