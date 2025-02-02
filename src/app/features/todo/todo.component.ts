@@ -10,6 +10,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {PaginationComponent} from "../../shared/components/pagination/pagination.component";
 import {EmptyPage, Page} from "../../core/models/page.model";
 import {Pageable, PageParams} from "../../core/models/pageable.model";
+import {Observable, switchMap, tap} from "rxjs";
 
 @Component({
   selector: 'app-todo',
@@ -39,13 +40,13 @@ export class TodoComponent implements OnInit {
     this.newTask = { content: '', completed: false};
     this.errorMessage = '';
     this.tasks = new EmptyPage();
-    this.pageable = new PageParams(["id"], 5);
     this.tasksPerPage = 5;
+    this.pageable = new PageParams(["id"], this.tasksPerPage);
     this.invalidContent = false;
   }
 
   ngOnInit(): void {
-    this.loadTasks();
+    this.loadTasks().subscribe();
   }
 
   openModel(content: TemplateRef<any>, taskId: number) {
@@ -60,45 +61,42 @@ export class TodoComponent implements OnInit {
 
     this.invalidContent = false;
 
-    this.taskService.createTask(this.newTask).subscribe({
-      complete: () => {
-        this.resetForm(form);
-        this.loadTasks();
-      },
-      error: (err) => this.handlerError(err)
-    });
+    this.taskService.createTask(this.newTask)
+      .pipe(switchMap(() => this.loadTasks()))
+      .subscribe({
+        complete: () => this.resetForm(form),
+        error: (err) => this.handlerError(err)
+      });
   }
 
   onTaskCompletedStatusChange(): void {
-    this.loadTasks();
+    this.loadTasks().subscribe();
   }
 
   onDeleteEvent(): void {
-    this.loadTasks();
-    console.log('this.tasks: ', this.tasks)
+    this.loadTasks().subscribe(() => {
+      // change to the previous page when delete all the task for the current page
+      if (this.tasks.empty && this.pageable.page > 0) {
+        this.onPageChange(this.pageable.page);
+      }
+    });
   }
 
   onPageChange(newPage: number): void {
     this.pageable.page = newPage - 1;
-
-    console.log(this.pageable)
-
-    this.taskService.getAllTask(this.pageable).subscribe({
-      next: value => this.tasks = value,
-      error: (err) => this.handlerError(err)
-    })
+    this.loadTasks().subscribe();
   }
 
-  private loadTasks(): void {
-    this.taskService.getAllTask(this.pageable).subscribe({
-      next: value => {
-        this.tasks = value
-        console.log({ value })
-        this.tasksCreatedCounter = value.totalElements;
-        this.setCompletedTaskCounter();
-      },
-      error: (err) => this.handlerError(err)
-    });
+  private loadTasks(): Observable<Page<TaskDTO>> {
+    return this.taskService.getAllTask(this.pageable).pipe(
+      tap({
+        next: value => {
+          this.tasks = value
+          this.tasksCreatedCounter = value.totalElements;
+          this.setCompletedTaskCounter();
+        },
+        error: (err) => this.handlerError(err)
+    }));
   }
 
   private setCompletedTaskCounter(): void {
@@ -131,10 +129,12 @@ export class TodoComponent implements OnInit {
       completed: task.completed
     };
 
-    this.taskService.updateTask(taskId, updateTaskDTO).subscribe({
-      complete: () => this.loadTasks(),
-      error: (err) => this.handlerError(err)
-    })
+    this.taskService.updateTask(taskId, updateTaskDTO)
+      .pipe(switchMap(() => this.loadTasks()))
+      .subscribe({
+        complete: () => this.loadTasks(),
+        error: (err) => this.handlerError(err)
+      })
   }
 
   private handlerError(error: any) {
