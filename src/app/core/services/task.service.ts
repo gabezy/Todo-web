@@ -4,6 +4,8 @@ import {environment} from "../../../environments/environment";
 import {CreateTaskDTO, TaskCompletedDTO, TaskDTO, TaskFilterDTO, UpdateTaskDTO} from "../dtos/task.dto";
 import {Observable} from "rxjs";
 import {toHttpParams} from "../utils/params.utils";
+import {Pageable} from "../models/pageable.model";
+import {Page} from "../models/page.model";
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +22,8 @@ export class TaskService {
     return this.http.post<void>(this.baseUrl, task);
   }
 
-  getAllTask(): Observable<TaskDTO[]> {
-    return this.http.get<TaskDTO[]>(this.baseUrl)
+  getAllTask(pageable: Pageable): Observable<Page<TaskDTO>> {
+    return this.http.get<Page<TaskDTO>>(this.baseUrl, { params: toHttpParams(pageable)})
   }
 
   getByFilter(filter: TaskFilterDTO): Observable<TaskDTO[]> {

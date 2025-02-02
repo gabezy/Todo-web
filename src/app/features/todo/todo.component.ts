@@ -7,31 +7,42 @@ import {NgForOf, NgIf} from "@angular/common";
 import {AlertComponent} from "../../shared/components/alert/alert.component";
 import {TodoCardComponent} from "./todo-card/todo-card.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {PaginationComponent} from "../../shared/components/pagination/pagination.component";
+import {EmptyPage, Page} from "../../core/models/page.model";
+import {Pageable, PageParams} from "../../core/models/pageable.model";
 
 @Component({
   selector: 'app-todo',
   standalone: true,
-  imports: [
-    FormsModule, EmptyStateComponent, NgIf,
-    AlertComponent, TodoCardComponent, NgForOf
-  ],
+    imports: [
+        FormsModule, EmptyStateComponent, NgIf,
+        AlertComponent, TodoCardComponent, NgForOf, PaginationComponent
+    ],
   templateUrl: './todo.component.html',
   styleUrl: './todo.component.sass'
 })
 export class TodoComponent implements OnInit {
 
-  tasksCreatedCounter!: number;
-  tasksCompletedCounter!: number;
-  newTask: CreateTaskDTO = {
-    content: '',
-    completed: false
-  };
-  errorMessage = '';
-  tasks: TaskDTO[] = [];
-  invalidContent = false;
+  tasksCreatedCounter: number;
+  tasksCompletedCounter: number;
+  newTask: CreateTaskDTO;
+  errorMessage: string;
+  tasks: Page<TaskDTO>;
+  pageable: Pageable;
+  tasksPerPage: number;
+  invalidContent: boolean;
   selectedTask!: TaskDTO;
 
-  constructor(private readonly taskService: TaskService, private readonly modalService: NgbModal) { }
+  constructor(private readonly taskService: TaskService, private readonly modalService: NgbModal) {
+    this.tasksCreatedCounter = 0;
+    this.tasksCompletedCounter = 0;
+    this.newTask = { content: '', completed: false};
+    this.errorMessage = '';
+    this.tasks = new EmptyPage();
+    this.pageable = new PageParams(["id"], 5);
+    this.tasksPerPage = 5;
+    this.invalidContent = false;
+  }
 
   ngOnInit(): void {
     this.loadTasks();
@@ -48,6 +59,7 @@ export class TodoComponent implements OnInit {
     }
 
     this.invalidContent = false;
+
     this.taskService.createTask(this.newTask).subscribe({
       complete: () => {
         this.resetForm(form);
@@ -63,18 +75,30 @@ export class TodoComponent implements OnInit {
 
   onDeleteEvent(): void {
     this.loadTasks();
+    console.log('this.tasks: ', this.tasks)
+  }
+
+  onPageChange(newPage: number): void {
+    this.pageable.page = newPage - 1;
+
+    console.log(this.pageable)
+
+    this.taskService.getAllTask(this.pageable).subscribe({
+      next: value => this.tasks = value,
+      error: (err) => this.handlerError(err)
+    })
   }
 
   private loadTasks(): void {
-    this.taskService.getAllTask().subscribe({
+    this.taskService.getAllTask(this.pageable).subscribe({
       next: value => {
         this.tasks = value
-        this.tasksCreatedCounter = value.length;
+        console.log({ value })
+        this.tasksCreatedCounter = value.totalElements;
         this.setCompletedTaskCounter();
       },
       error: (err) => this.handlerError(err)
     });
-
   }
 
   private setCompletedTaskCounter(): void {
