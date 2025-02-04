@@ -24,7 +24,7 @@
     </div>
 
     <main class="col-12 pb-2">
-      <div *ngFor="let task of tasks">
+      <div *ngFor="let task of tasks.content">
         <app-todo-card
           [task]="task"
           (completedStatusChanged)="onTaskCompletedStatusChange()"
@@ -33,6 +33,16 @@
         ></app-todo-card>
       </div>
     </main>
+
+    <div class="pb-2">
+      <app-pagination
+        [totalItems]="tasks.content.length"
+        [itemsPerPage]="tasksPerPage"
+        [totalPages]="tasks.totalPages"
+        [currentPage]="1"
+        (pageChange)="onPageChange($event)"
+      ></app-pagination>
+    </div>
 
     <ng-template #content let-modal>
       <div class="modal-header">
@@ -57,7 +67,7 @@
       </div>
     </ng-template>
 
-    <app-empty-state *ngIf="tasks.length == 0" resource="task" />
+    <app-empty-state *ngIf="tasks.content.length == 0" resource="task" />
   </div>
 </div>
 
