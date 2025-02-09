@@ -1,0 +1,39 @@
+.task-card
+  background: #262626
+  .action-button
+    opacity: 0
+    background: transparent
+    color: #808080
+    padding: 4px
+    border-radius: 8px
+    &:hover
+      background: #808080
+      color: #D9D9D9
+    &.delete-button:hover
+      color: #E25858
+  &:hover button
+    opacity: initial
+  @media (max-width: 700px)
+    .action-button
+      opacity: initial
+
+.completed-button
+  width: 20px
+  height: 20px
+  border-radius: 50%
+  border: 1px solid #4EA8DE
+  background: transparent
+  color: #F2F2F2
+  &.uncompleted:hover
+    background: #1E6F9F
+    opacity: 0.5
+  &.completed:hover
+    background: #5E60CE
+    border-color: #5E60CE
+    &:hover
+      background: #8284FA
+
+.task-content
+  &.completed
+    text-decoration: line-through
+    color: #808080
