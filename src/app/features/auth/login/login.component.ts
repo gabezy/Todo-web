@@ -31,10 +31,7 @@ export class LoginComponent {
         this.authService.storeToken(auth.token);
         this.router.navigate(['']);
       },
-      error: err => {
-        const { description } = err.error;
-        this.errorMessage = description;
-      }
+      error: e => this.errorMessage = e.error?.description || "It was not possible to log in. Try again later"
     })
   }
 
